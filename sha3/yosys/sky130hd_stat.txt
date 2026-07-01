@@ -1,0 +1,87 @@
+
+7. Printing statistics.
+
+=== sha3 ===
+
+   Number of wires:              35310
+   Number of wire bits:          99690
+   Number of public wires:          45
+   Number of public wire bits:   16379
+   Number of ports:                 15
+   Number of port bits:            145
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:              28282
+     sky130_fd_sc_hd__a2111o_1       3
+     sky130_fd_sc_hd__a2111oi_0     85
+     sky130_fd_sc_hd__a211o_1       16
+     sky130_fd_sc_hd__a211oi_1     221
+     sky130_fd_sc_hd__a21boi_0       5
+     sky130_fd_sc_hd__a21o_1        15
+     sky130_fd_sc_hd__a21oi_1     3400
+     sky130_fd_sc_hd__a221o_1       45
+     sky130_fd_sc_hd__a221oi_1     304
+     sky130_fd_sc_hd__a222oi_1     261
+     sky130_fd_sc_hd__a22o_1       293
+     sky130_fd_sc_hd__a22oi_1      440
+     sky130_fd_sc_hd__a2bb2oi_1     22
+     sky130_fd_sc_hd__a311o_1        1
+     sky130_fd_sc_hd__a311oi_1     304
+     sky130_fd_sc_hd__a31o_1         4
+     sky130_fd_sc_hd__a31oi_1     1173
+     sky130_fd_sc_hd__a32o_1         2
+     sky130_fd_sc_hd__a32oi_1      141
+     sky130_fd_sc_hd__a41oi_1       11
+     sky130_fd_sc_hd__and2_0        16
+     sky130_fd_sc_hd__and3_1        29
+     sky130_fd_sc_hd__and3b_1        1
+     sky130_fd_sc_hd__and4_1         3
+     sky130_fd_sc_hd__clkinv_1      22
+     sky130_fd_sc_hd__dfrtp_1     1622
+     sky130_fd_sc_hd__lpflow_inputiso1p_1     12
+     sky130_fd_sc_hd__lpflow_isobufsrc_1     23
+     sky130_fd_sc_hd__maj3_1        11
+     sky130_fd_sc_hd__mux2_1       285
+     sky130_fd_sc_hd__mux2i_1     1246
+     sky130_fd_sc_hd__mux4_2       141
+     sky130_fd_sc_hd__nand2_1     2363
+     sky130_fd_sc_hd__nand2b_1      45
+     sky130_fd_sc_hd__nand3_1     1030
+     sky130_fd_sc_hd__nand3b_1       8
+     sky130_fd_sc_hd__nand4_1       63
+     sky130_fd_sc_hd__nand4b_1       2
+     sky130_fd_sc_hd__nor2_1      1792
+     sky130_fd_sc_hd__nor2b_1        1
+     sky130_fd_sc_hd__nor3_1       928
+     sky130_fd_sc_hd__nor3b_1        3
+     sky130_fd_sc_hd__nor4_1        22
+     sky130_fd_sc_hd__nor4b_1        1
+     sky130_fd_sc_hd__o2111ai_1      5
+     sky130_fd_sc_hd__o211a_1       13
+     sky130_fd_sc_hd__o211ai_1     647
+     sky130_fd_sc_hd__o21a_1        18
+     sky130_fd_sc_hd__o21ai_0     3589
+     sky130_fd_sc_hd__o21ba_1        3
+     sky130_fd_sc_hd__o21bai_1       3
+     sky130_fd_sc_hd__o221a_1        3
+     sky130_fd_sc_hd__o221ai_1      49
+     sky130_fd_sc_hd__o22a_1        31
+     sky130_fd_sc_hd__o22ai_1      844
+     sky130_fd_sc_hd__o2bb2ai_1      3
+     sky130_fd_sc_hd__o311a_1       15
+     sky130_fd_sc_hd__o311ai_0     335
+     sky130_fd_sc_hd__o31a_1         5
+     sky130_fd_sc_hd__o31ai_1      551
+     sky130_fd_sc_hd__o32a_1         8
+     sky130_fd_sc_hd__o32ai_1        6
+     sky130_fd_sc_hd__o41ai_1        1
+     sky130_fd_sc_hd__or3_1         60
+     sky130_fd_sc_hd__or4_1          2
+     sky130_fd_sc_hd__xnor2_1     3427
+     sky130_fd_sc_hd__xnor3_1        1
+     sky130_fd_sc_hd__xor2_1      2248
+
+   Chip area for module '\sha3': 216171.075200
+     of which used for sequential elements: 40588.928000 (18.78%)
+
