@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 `include "sha3_defines.vh"
 
-module tb;
+module smoke_tb;
     localparam DATA_WIDTH = 32;
     localparam DATA_BYTES = DATA_WIDTH / 8;
     localparam CLK_PERIOD = 10;
@@ -52,8 +52,8 @@ module tb;
     end
 
     initial begin
-        $dumpfile("sha3_verilog/sim/sha3_verilog.vcd");
-        $dumpvars(0, tb);
+        $dumpfile("sim/out/smoke_tb.vcd");
+        $dumpvars(0, smoke_tb);
     end
 
     task reset_dut;

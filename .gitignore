@@ -1,4 +1,5 @@
 # Simulation outputs
+sha3_verilog/sim/out/
 *.vcd
 *.fst
 *.fsdb
