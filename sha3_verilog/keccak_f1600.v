@@ -10,77 +10,6 @@ module keccak_f1600 (
     output [1599:0] state_o
 );
 
-    reg [63:0] state_s [0:4][0:4];
-    reg [63:0] theta   [0:4][0:4];
-    reg [63:0] pi      [0:4][0:4];
-    reg [63:0] chi     [0:4][0:4];
-    reg [63:0] iota    [0:4][0:4];
-    reg [1599:0] state_o_r;
-
-    integer x;
-    integer y;
-    integer z;
-    integer xn;
-    integer xp;
-    integer zn;
-    integer rot;
-
-    assign state_o = state_o_r;
-
-    function integer sc;
-        input integer x_i;
-        input integer y_i;
-        begin
-            case (x_i)
-                0: begin
-                    case (y_i)
-                        0: sc = 0;
-                        1: sc = 36;
-                        2: sc = 3;
-                        3: sc = 41;
-                        default: sc = 18;
-                    endcase
-                end
-                1: begin
-                    case (y_i)
-                        0: sc = 1;
-                        1: sc = 44;
-                        2: sc = 10;
-                        3: sc = 45;
-                        default: sc = 2;
-                    endcase
-                end
-                2: begin
-                    case (y_i)
-                        0: sc = 62;
-                        1: sc = 6;
-                        2: sc = 43;
-                        3: sc = 15;
-                        default: sc = 61;
-                    endcase
-                end
-                3: begin
-                    case (y_i)
-                        0: sc = 28;
-                        1: sc = 55;
-                        2: sc = 25;
-                        3: sc = 21;
-                        default: sc = 56;
-                    endcase
-                end
-                default: begin
-                    case (y_i)
-                        0: sc = 27;
-                        1: sc = 20;
-                        2: sc = 39;
-                        3: sc = 8;
-                        default: sc = 14;
-                    endcase
-                end
-            endcase
-        end
-    endfunction
-
     function [63:0] rc;
         input [4:0] round;
         begin
@@ -95,20 +24,20 @@ module keccak_f1600 (
                 5'd7:  rc = 64'h8000000000008009;
                 5'd8:  rc = 64'h000000000000008a;
                 5'd9:  rc = 64'h0000000000000088;
-                5'd10: rc = 64'h0000000080008009;
-                5'd11: rc = 64'h000000008000000a;
-                5'd12: rc = 64'h000000008000808b;
-                5'd13: rc = 64'h800000000000008b;
-                5'd14: rc = 64'h8000000000008089;
-                5'd15: rc = 64'h8000000000008003;
-                5'd16: rc = 64'h8000000000008002;
-                5'd17: rc = 64'h8000000000000080;
-                5'd18: rc = 64'h000000000000800a;
-                5'd19: rc = 64'h800000008000000a;
-                5'd20: rc = 64'h8000000080008081;
-                5'd21: rc = 64'h8000000000008080;
-                5'd22: rc = 64'h0000000080000001;
-                5'd23: rc = 64'h8000000080008008;
+                5'd10:  rc = 64'h0000000080008009;
+                5'd11:  rc = 64'h000000008000000a;
+                5'd12:  rc = 64'h000000008000808b;
+                5'd13:  rc = 64'h800000000000008b;
+                5'd14:  rc = 64'h8000000000008089;
+                5'd15:  rc = 64'h8000000000008003;
+                5'd16:  rc = 64'h8000000000008002;
+                5'd17:  rc = 64'h8000000000000080;
+                5'd18:  rc = 64'h000000000000800a;
+                5'd19:  rc = 64'h800000008000000a;
+                5'd20:  rc = 64'h8000000080008081;
+                5'd21:  rc = 64'h8000000000008080;
+                5'd22:  rc = 64'h0000000080000001;
+                5'd23:  rc = 64'h8000000080008008;
                 default: rc = 64'h0000000000000000;
             endcase
         end
@@ -125,62 +54,171 @@ module keccak_f1600 (
         end
     endfunction
 
-    always @* begin
-        for (x = 0; x < 5; x = x + 1) begin
-            for (y = 0; y < 5; y = y + 1) begin
-                for (z = 0; z < 8; z = z + 1) begin
-                    state_s[x][y][8*z +: 8] = state_i[8*(x*8 + y*40 + z) +: 8];
-                end
-            end
-        end
+    // Convert the flat 1600-bit state into 25 synthesis-friendly 64-bit lanes.
+    wire [63:0] state_s_0_0 = state_i[0 +: 64];
+    wire [63:0] state_s_0_1 = state_i[320 +: 64];
+    wire [63:0] state_s_0_2 = state_i[640 +: 64];
+    wire [63:0] state_s_0_3 = state_i[960 +: 64];
+    wire [63:0] state_s_0_4 = state_i[1280 +: 64];
+    wire [63:0] state_s_1_0 = state_i[64 +: 64];
+    wire [63:0] state_s_1_1 = state_i[384 +: 64];
+    wire [63:0] state_s_1_2 = state_i[704 +: 64];
+    wire [63:0] state_s_1_3 = state_i[1024 +: 64];
+    wire [63:0] state_s_1_4 = state_i[1344 +: 64];
+    wire [63:0] state_s_2_0 = state_i[128 +: 64];
+    wire [63:0] state_s_2_1 = state_i[448 +: 64];
+    wire [63:0] state_s_2_2 = state_i[768 +: 64];
+    wire [63:0] state_s_2_3 = state_i[1088 +: 64];
+    wire [63:0] state_s_2_4 = state_i[1408 +: 64];
+    wire [63:0] state_s_3_0 = state_i[192 +: 64];
+    wire [63:0] state_s_3_1 = state_i[512 +: 64];
+    wire [63:0] state_s_3_2 = state_i[832 +: 64];
+    wire [63:0] state_s_3_3 = state_i[1152 +: 64];
+    wire [63:0] state_s_3_4 = state_i[1472 +: 64];
+    wire [63:0] state_s_4_0 = state_i[256 +: 64];
+    wire [63:0] state_s_4_1 = state_i[576 +: 64];
+    wire [63:0] state_s_4_2 = state_i[896 +: 64];
+    wire [63:0] state_s_4_3 = state_i[1216 +: 64];
+    wire [63:0] state_s_4_4 = state_i[1536 +: 64];
 
-        for (x = 0; x < 5; x = x + 1) begin
-            xn = (5 + x - 1) % 5;
-            xp = (x + 1) % 5;
-            for (y = 0; y < 5; y = y + 1) begin
-                for (z = 0; z < 64; z = z + 1) begin
-                    zn = (64 + z - 1) % 64;
-                    theta[x][y][z] = state_s[x][y][z]
-                                    ^ (state_s[xn][0][z] ^ state_s[xn][1][z] ^ state_s[xn][2][z] ^ state_s[xn][3][z] ^ state_s[xn][4][z])
-                                    ^ (state_s[xp][0][zn] ^ state_s[xp][1][zn] ^ state_s[xp][2][zn] ^ state_s[xp][3][zn] ^ state_s[xp][4][zn]);
-                end
-            end
-        end
+    // THETA
+    wire [63:0] theta_mix_0 = (state_s_4_0 ^ state_s_4_1 ^ state_s_4_2 ^ state_s_4_3 ^ state_s_4_4) ^ (rol64(state_s_1_0, 1) ^ rol64(state_s_1_1, 1) ^ rol64(state_s_1_2, 1) ^ rol64(state_s_1_3, 1) ^ rol64(state_s_1_4, 1));
+    wire [63:0] theta_mix_1 = (state_s_0_0 ^ state_s_0_1 ^ state_s_0_2 ^ state_s_0_3 ^ state_s_0_4) ^ (rol64(state_s_2_0, 1) ^ rol64(state_s_2_1, 1) ^ rol64(state_s_2_2, 1) ^ rol64(state_s_2_3, 1) ^ rol64(state_s_2_4, 1));
+    wire [63:0] theta_mix_2 = (state_s_1_0 ^ state_s_1_1 ^ state_s_1_2 ^ state_s_1_3 ^ state_s_1_4) ^ (rol64(state_s_3_0, 1) ^ rol64(state_s_3_1, 1) ^ rol64(state_s_3_2, 1) ^ rol64(state_s_3_3, 1) ^ rol64(state_s_3_4, 1));
+    wire [63:0] theta_mix_3 = (state_s_2_0 ^ state_s_2_1 ^ state_s_2_2 ^ state_s_2_3 ^ state_s_2_4) ^ (rol64(state_s_4_0, 1) ^ rol64(state_s_4_1, 1) ^ rol64(state_s_4_2, 1) ^ rol64(state_s_4_3, 1) ^ rol64(state_s_4_4, 1));
+    wire [63:0] theta_mix_4 = (state_s_3_0 ^ state_s_3_1 ^ state_s_3_2 ^ state_s_3_3 ^ state_s_3_4) ^ (rol64(state_s_0_0, 1) ^ rol64(state_s_0_1, 1) ^ rol64(state_s_0_2, 1) ^ rol64(state_s_0_3, 1) ^ rol64(state_s_0_4, 1));
+    wire [63:0] theta_0_0 = state_s_0_0 ^ theta_mix_0;
+    wire [63:0] theta_0_1 = state_s_0_1 ^ theta_mix_0;
+    wire [63:0] theta_0_2 = state_s_0_2 ^ theta_mix_0;
+    wire [63:0] theta_0_3 = state_s_0_3 ^ theta_mix_0;
+    wire [63:0] theta_0_4 = state_s_0_4 ^ theta_mix_0;
+    wire [63:0] theta_1_0 = state_s_1_0 ^ theta_mix_1;
+    wire [63:0] theta_1_1 = state_s_1_1 ^ theta_mix_1;
+    wire [63:0] theta_1_2 = state_s_1_2 ^ theta_mix_1;
+    wire [63:0] theta_1_3 = state_s_1_3 ^ theta_mix_1;
+    wire [63:0] theta_1_4 = state_s_1_4 ^ theta_mix_1;
+    wire [63:0] theta_2_0 = state_s_2_0 ^ theta_mix_2;
+    wire [63:0] theta_2_1 = state_s_2_1 ^ theta_mix_2;
+    wire [63:0] theta_2_2 = state_s_2_2 ^ theta_mix_2;
+    wire [63:0] theta_2_3 = state_s_2_3 ^ theta_mix_2;
+    wire [63:0] theta_2_4 = state_s_2_4 ^ theta_mix_2;
+    wire [63:0] theta_3_0 = state_s_3_0 ^ theta_mix_3;
+    wire [63:0] theta_3_1 = state_s_3_1 ^ theta_mix_3;
+    wire [63:0] theta_3_2 = state_s_3_2 ^ theta_mix_3;
+    wire [63:0] theta_3_3 = state_s_3_3 ^ theta_mix_3;
+    wire [63:0] theta_3_4 = state_s_3_4 ^ theta_mix_3;
+    wire [63:0] theta_4_0 = state_s_4_0 ^ theta_mix_4;
+    wire [63:0] theta_4_1 = state_s_4_1 ^ theta_mix_4;
+    wire [63:0] theta_4_2 = state_s_4_2 ^ theta_mix_4;
+    wire [63:0] theta_4_3 = state_s_4_3 ^ theta_mix_4;
+    wire [63:0] theta_4_4 = state_s_4_4 ^ theta_mix_4;
 
-        for (x = 0; x < 5; x = x + 1) begin
-            for (y = 0; y < 5; y = y + 1) begin
-                rot = sc(x, y);
-                if (rot == 0) begin
-                    pi[y][(2*x + 3*y) % 5] = theta[x][y];
-                end else begin
-                    pi[y][(2*x + 3*y) % 5] = rol64(theta[x][y], rot);
-                end
-            end
-        end
+    // RHO + PI
+    wire [63:0] pi_0_0 = theta_0_0;
+    wire [63:0] pi_1_3 = rol64(theta_0_1, 36);
+    wire [63:0] pi_2_1 = rol64(theta_0_2, 3);
+    wire [63:0] pi_3_4 = rol64(theta_0_3, 41);
+    wire [63:0] pi_4_2 = rol64(theta_0_4, 18);
+    wire [63:0] pi_0_2 = rol64(theta_1_0, 1);
+    wire [63:0] pi_1_0 = rol64(theta_1_1, 44);
+    wire [63:0] pi_2_3 = rol64(theta_1_2, 10);
+    wire [63:0] pi_3_1 = rol64(theta_1_3, 45);
+    wire [63:0] pi_4_4 = rol64(theta_1_4, 2);
+    wire [63:0] pi_0_4 = rol64(theta_2_0, 62);
+    wire [63:0] pi_1_2 = rol64(theta_2_1, 6);
+    wire [63:0] pi_2_0 = rol64(theta_2_2, 43);
+    wire [63:0] pi_3_3 = rol64(theta_2_3, 15);
+    wire [63:0] pi_4_1 = rol64(theta_2_4, 61);
+    wire [63:0] pi_0_1 = rol64(theta_3_0, 28);
+    wire [63:0] pi_1_4 = rol64(theta_3_1, 55);
+    wire [63:0] pi_2_2 = rol64(theta_3_2, 25);
+    wire [63:0] pi_3_0 = rol64(theta_3_3, 21);
+    wire [63:0] pi_4_3 = rol64(theta_3_4, 56);
+    wire [63:0] pi_0_3 = rol64(theta_4_0, 27);
+    wire [63:0] pi_1_1 = rol64(theta_4_1, 20);
+    wire [63:0] pi_2_4 = rol64(theta_4_2, 39);
+    wire [63:0] pi_3_2 = rol64(theta_4_3, 8);
+    wire [63:0] pi_4_0 = rol64(theta_4_4, 14);
 
-        for (x = 0; x < 5; x = x + 1) begin
-            for (y = 0; y < 5; y = y + 1) begin
-                chi[x][y] = pi[x][y] ^ (~pi[(x+1) % 5][y] & pi[(x+2) % 5][y]);
-            end
-        end
+    // CHI
+    wire [63:0] chi_0_0 = pi_0_0 ^ (~pi_1_0 & pi_2_0);
+    wire [63:0] chi_0_1 = pi_0_1 ^ (~pi_1_1 & pi_2_1);
+    wire [63:0] chi_0_2 = pi_0_2 ^ (~pi_1_2 & pi_2_2);
+    wire [63:0] chi_0_3 = pi_0_3 ^ (~pi_1_3 & pi_2_3);
+    wire [63:0] chi_0_4 = pi_0_4 ^ (~pi_1_4 & pi_2_4);
+    wire [63:0] chi_1_0 = pi_1_0 ^ (~pi_2_0 & pi_3_0);
+    wire [63:0] chi_1_1 = pi_1_1 ^ (~pi_2_1 & pi_3_1);
+    wire [63:0] chi_1_2 = pi_1_2 ^ (~pi_2_2 & pi_3_2);
+    wire [63:0] chi_1_3 = pi_1_3 ^ (~pi_2_3 & pi_3_3);
+    wire [63:0] chi_1_4 = pi_1_4 ^ (~pi_2_4 & pi_3_4);
+    wire [63:0] chi_2_0 = pi_2_0 ^ (~pi_3_0 & pi_4_0);
+    wire [63:0] chi_2_1 = pi_2_1 ^ (~pi_3_1 & pi_4_1);
+    wire [63:0] chi_2_2 = pi_2_2 ^ (~pi_3_2 & pi_4_2);
+    wire [63:0] chi_2_3 = pi_2_3 ^ (~pi_3_3 & pi_4_3);
+    wire [63:0] chi_2_4 = pi_2_4 ^ (~pi_3_4 & pi_4_4);
+    wire [63:0] chi_3_0 = pi_3_0 ^ (~pi_4_0 & pi_0_0);
+    wire [63:0] chi_3_1 = pi_3_1 ^ (~pi_4_1 & pi_0_1);
+    wire [63:0] chi_3_2 = pi_3_2 ^ (~pi_4_2 & pi_0_2);
+    wire [63:0] chi_3_3 = pi_3_3 ^ (~pi_4_3 & pi_0_3);
+    wire [63:0] chi_3_4 = pi_3_4 ^ (~pi_4_4 & pi_0_4);
+    wire [63:0] chi_4_0 = pi_4_0 ^ (~pi_0_0 & pi_1_0);
+    wire [63:0] chi_4_1 = pi_4_1 ^ (~pi_0_1 & pi_1_1);
+    wire [63:0] chi_4_2 = pi_4_2 ^ (~pi_0_2 & pi_1_2);
+    wire [63:0] chi_4_3 = pi_4_3 ^ (~pi_0_3 & pi_1_3);
+    wire [63:0] chi_4_4 = pi_4_4 ^ (~pi_0_4 & pi_1_4);
 
-        for (x = 0; x < 5; x = x + 1) begin
-            for (y = 0; y < 5; y = y + 1) begin
-                if (x == 0 && y == 0)
-                    iota[x][y] = chi[x][y] ^ rc(round_cnt_i);
-                else
-                    iota[x][y] = chi[x][y];
-            end
-        end
+    // IOTA
+    wire [63:0] iota_0_0 = chi_0_0 ^ rc(round_cnt_i);
+    wire [63:0] iota_0_1 = chi_0_1;
+    wire [63:0] iota_0_2 = chi_0_2;
+    wire [63:0] iota_0_3 = chi_0_3;
+    wire [63:0] iota_0_4 = chi_0_4;
+    wire [63:0] iota_1_0 = chi_1_0;
+    wire [63:0] iota_1_1 = chi_1_1;
+    wire [63:0] iota_1_2 = chi_1_2;
+    wire [63:0] iota_1_3 = chi_1_3;
+    wire [63:0] iota_1_4 = chi_1_4;
+    wire [63:0] iota_2_0 = chi_2_0;
+    wire [63:0] iota_2_1 = chi_2_1;
+    wire [63:0] iota_2_2 = chi_2_2;
+    wire [63:0] iota_2_3 = chi_2_3;
+    wire [63:0] iota_2_4 = chi_2_4;
+    wire [63:0] iota_3_0 = chi_3_0;
+    wire [63:0] iota_3_1 = chi_3_1;
+    wire [63:0] iota_3_2 = chi_3_2;
+    wire [63:0] iota_3_3 = chi_3_3;
+    wire [63:0] iota_3_4 = chi_3_4;
+    wire [63:0] iota_4_0 = chi_4_0;
+    wire [63:0] iota_4_1 = chi_4_1;
+    wire [63:0] iota_4_2 = chi_4_2;
+    wire [63:0] iota_4_3 = chi_4_3;
+    wire [63:0] iota_4_4 = chi_4_4;
 
-        state_o_r = 1600'd0;
-        for (x = 0; x < 5; x = x + 1) begin
-            for (y = 0; y < 5; y = y + 1) begin
-                for (z = 0; z < 8; z = z + 1) begin
-                    state_o_r[8*(x*8 + y*40 + z) +: 8] = iota[x][y][8*z +: 8];
-                end
-            end
-        end
-    end
+    // Convert lanes back into the flat output state.
+    assign state_o[0 +: 64] = iota_0_0;
+    assign state_o[320 +: 64] = iota_0_1;
+    assign state_o[640 +: 64] = iota_0_2;
+    assign state_o[960 +: 64] = iota_0_3;
+    assign state_o[1280 +: 64] = iota_0_4;
+    assign state_o[64 +: 64] = iota_1_0;
+    assign state_o[384 +: 64] = iota_1_1;
+    assign state_o[704 +: 64] = iota_1_2;
+    assign state_o[1024 +: 64] = iota_1_3;
+    assign state_o[1344 +: 64] = iota_1_4;
+    assign state_o[128 +: 64] = iota_2_0;
+    assign state_o[448 +: 64] = iota_2_1;
+    assign state_o[768 +: 64] = iota_2_2;
+    assign state_o[1088 +: 64] = iota_2_3;
+    assign state_o[1408 +: 64] = iota_2_4;
+    assign state_o[192 +: 64] = iota_3_0;
+    assign state_o[512 +: 64] = iota_3_1;
+    assign state_o[832 +: 64] = iota_3_2;
+    assign state_o[1152 +: 64] = iota_3_3;
+    assign state_o[1472 +: 64] = iota_3_4;
+    assign state_o[256 +: 64] = iota_4_0;
+    assign state_o[576 +: 64] = iota_4_1;
+    assign state_o[896 +: 64] = iota_4_2;
+    assign state_o[1216 +: 64] = iota_4_3;
+    assign state_o[1536 +: 64] = iota_4_4;
 
 endmodule

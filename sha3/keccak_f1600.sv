@@ -16,6 +16,8 @@
 //
 // @author: Patrick Karl <patrick.karl@tum.de>
 
+`timescale 1ns/1ps
+
 module keccak_f1600
     import sha3_pkg::*;
 (

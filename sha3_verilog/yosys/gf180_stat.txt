@@ -1,0 +1,140 @@
+
+8. Printing statistics.
+
+=== keccak_f1600 ===
+
+   Number of wires:               8216
+   Number of wire bits:          27232
+   Number of public wires:         184
+   Number of public wire bits:   14730
+   Number of ports:                  3
+   Number of port bits:           3205
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:               6347
+     gf180mcu_fd_sc_mcu9t5v0__and2_1      2
+     gf180mcu_fd_sc_mcu9t5v0__aoi211_1      1
+     gf180mcu_fd_sc_mcu9t5v0__aoi21_1      3
+     gf180mcu_fd_sc_mcu9t5v0__aoi22_1      4
+     gf180mcu_fd_sc_mcu9t5v0__clkinv_1      4
+     gf180mcu_fd_sc_mcu9t5v0__mux2_1      1
+     gf180mcu_fd_sc_mcu9t5v0__nand2_1    950
+     gf180mcu_fd_sc_mcu9t5v0__nand3_1      2
+     gf180mcu_fd_sc_mcu9t5v0__nor2_1    665
+     gf180mcu_fd_sc_mcu9t5v0__nor3_1      1
+     gf180mcu_fd_sc_mcu9t5v0__oai21_1      5
+     gf180mcu_fd_sc_mcu9t5v0__oai22_1      2
+     gf180mcu_fd_sc_mcu9t5v0__oai31_1      1
+     gf180mcu_fd_sc_mcu9t5v0__oai32_1      2
+     gf180mcu_fd_sc_mcu9t5v0__or2_1      2
+     gf180mcu_fd_sc_mcu9t5v0__xnor2_1   3536
+     gf180mcu_fd_sc_mcu9t5v0__xnor3_1    536
+     gf180mcu_fd_sc_mcu9t5v0__xor2_1    471
+     gf180mcu_fd_sc_mcu9t5v0__xor3_1    159
+
+   Chip area for module '\keccak_f1600': 206193.254400
+     of which used for sequential elements: 0.000000 (0.00%)
+
+=== sha3 ===
+
+   Number of wires:              24489
+   Number of wire bits:         659524
+   Number of public wires:          37
+   Number of public wire bits:    5198
+   Number of ports:                 15
+   Number of port bits:            145
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:              18795
+     gf180mcu_fd_sc_mcu9t5v0__and2_1    164
+     gf180mcu_fd_sc_mcu9t5v0__and3_1     66
+     gf180mcu_fd_sc_mcu9t5v0__and4_1      5
+     gf180mcu_fd_sc_mcu9t5v0__aoi211_1    140
+     gf180mcu_fd_sc_mcu9t5v0__aoi21_1   1060
+     gf180mcu_fd_sc_mcu9t5v0__aoi221_1   1574
+     gf180mcu_fd_sc_mcu9t5v0__aoi222_1    541
+     gf180mcu_fd_sc_mcu9t5v0__aoi22_1   3381
+     gf180mcu_fd_sc_mcu9t5v0__clkinv_1    853
+     gf180mcu_fd_sc_mcu9t5v0__dffrnq_1   1622
+     gf180mcu_fd_sc_mcu9t5v0__mux2_1   1911
+     gf180mcu_fd_sc_mcu9t5v0__mux4_1      5
+     gf180mcu_fd_sc_mcu9t5v0__nand2_1   2389
+     gf180mcu_fd_sc_mcu9t5v0__nand3_1    747
+     gf180mcu_fd_sc_mcu9t5v0__nand4_1    144
+     gf180mcu_fd_sc_mcu9t5v0__nor2_1   1238
+     gf180mcu_fd_sc_mcu9t5v0__nor3_1    274
+     gf180mcu_fd_sc_mcu9t5v0__nor4_1    171
+     gf180mcu_fd_sc_mcu9t5v0__oai211_1    529
+     gf180mcu_fd_sc_mcu9t5v0__oai21_1   1184
+     gf180mcu_fd_sc_mcu9t5v0__oai221_1     71
+     gf180mcu_fd_sc_mcu9t5v0__oai222_1      5
+     gf180mcu_fd_sc_mcu9t5v0__oai22_1    101
+     gf180mcu_fd_sc_mcu9t5v0__oai31_1    396
+     gf180mcu_fd_sc_mcu9t5v0__oai32_1     47
+     gf180mcu_fd_sc_mcu9t5v0__or2_1     51
+     gf180mcu_fd_sc_mcu9t5v0__or3_1      5
+     gf180mcu_fd_sc_mcu9t5v0__or4_1      7
+     gf180mcu_fd_sc_mcu9t5v0__xnor2_1     72
+     gf180mcu_fd_sc_mcu9t5v0__xnor3_1      2
+     gf180mcu_fd_sc_mcu9t5v0__xor2_1     38
+     gf180mcu_fd_sc_mcu9t5v0__xor3_1      1
+     keccak_f1600                    1
+
+   Area for cell type \keccak_f1600 is unknown!
+
+   Chip area for module '\sha3': 565902.489600
+     of which used for sequential elements: 146493.849600 (25.89%)
+
+=== design hierarchy ===
+
+   sha3                              1
+     keccak_f1600                    1
+
+   Number of wires:              32705
+   Number of wire bits:         686756
+   Number of public wires:         221
+   Number of public wire bits:   19928
+   Number of ports:                 18
+   Number of port bits:           3350
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:              25141
+     gf180mcu_fd_sc_mcu9t5v0__and2_1    166
+     gf180mcu_fd_sc_mcu9t5v0__and3_1     66
+     gf180mcu_fd_sc_mcu9t5v0__and4_1      5
+     gf180mcu_fd_sc_mcu9t5v0__aoi211_1    141
+     gf180mcu_fd_sc_mcu9t5v0__aoi21_1   1063
+     gf180mcu_fd_sc_mcu9t5v0__aoi221_1   1574
+     gf180mcu_fd_sc_mcu9t5v0__aoi222_1    541
+     gf180mcu_fd_sc_mcu9t5v0__aoi22_1   3385
+     gf180mcu_fd_sc_mcu9t5v0__clkinv_1    857
+     gf180mcu_fd_sc_mcu9t5v0__dffrnq_1   1622
+     gf180mcu_fd_sc_mcu9t5v0__mux2_1   1912
+     gf180mcu_fd_sc_mcu9t5v0__mux4_1      5
+     gf180mcu_fd_sc_mcu9t5v0__nand2_1   3339
+     gf180mcu_fd_sc_mcu9t5v0__nand3_1    749
+     gf180mcu_fd_sc_mcu9t5v0__nand4_1    144
+     gf180mcu_fd_sc_mcu9t5v0__nor2_1   1903
+     gf180mcu_fd_sc_mcu9t5v0__nor3_1    275
+     gf180mcu_fd_sc_mcu9t5v0__nor4_1    171
+     gf180mcu_fd_sc_mcu9t5v0__oai211_1    529
+     gf180mcu_fd_sc_mcu9t5v0__oai21_1   1189
+     gf180mcu_fd_sc_mcu9t5v0__oai221_1     71
+     gf180mcu_fd_sc_mcu9t5v0__oai222_1      5
+     gf180mcu_fd_sc_mcu9t5v0__oai22_1    103
+     gf180mcu_fd_sc_mcu9t5v0__oai31_1    397
+     gf180mcu_fd_sc_mcu9t5v0__oai32_1     49
+     gf180mcu_fd_sc_mcu9t5v0__or2_1     53
+     gf180mcu_fd_sc_mcu9t5v0__or3_1      5
+     gf180mcu_fd_sc_mcu9t5v0__or4_1      7
+     gf180mcu_fd_sc_mcu9t5v0__xnor2_1   3608
+     gf180mcu_fd_sc_mcu9t5v0__xnor3_1    538
+     gf180mcu_fd_sc_mcu9t5v0__xor2_1    509
+     gf180mcu_fd_sc_mcu9t5v0__xor3_1    160
+
+   Chip area for top module '\sha3': 772095.744000
+     of which used for sequential elements: 0.000000 (0.00%)
+

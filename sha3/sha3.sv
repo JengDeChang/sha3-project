@@ -16,6 +16,8 @@
 //
 // @author: Patrick Karl <patrick.karl@tum.de>
 
+`timescale 1ns/1ps
+
 module sha3
     import sha3_pkg::*;
 #(
