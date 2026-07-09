@@ -61,6 +61,11 @@ ucli.key
 DVEfiles/
 AN.DB/
 
+# Python cache
+__pycache__/
+*.py[cod]
+
+
 # Editor, OS, and local environment
 *~
 *.swp
