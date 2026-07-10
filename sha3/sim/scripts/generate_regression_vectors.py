@@ -16,7 +16,8 @@ References:
     https://www.rfc-editor.org/rfc/rfc9861.html
 
 Run from sha3:
-    python3 sim/scripts/generate_regression_vectors.py
+    python3 sim/scripts/generate_regression_vectors.py --vector-set t1
+    python3 sim/scripts/generate_regression_vectors.py --vector-set t2
 """
 
 import argparse
@@ -225,6 +226,20 @@ def default_cases():
     return cases
 
 
+def exhaustive_input_len_cases():
+    cases = []
+
+    for mode, info in MODE_INFO.items():
+        rate = info["rate"]
+        out_len = info["out_len"]
+        for input_len in range(rate + 2):
+            idx = len(cases)
+            msg = message_for_case(mode, input_len, idx)
+            cases.append((mode, msg, out_len, flags_for_case(idx)))
+
+    return cases
+
+
 def self_check():
     # NIST FIPS 202 known-answer checks for the empty message.
     assert hashlib.sha3_256(b"").hexdigest() == (
@@ -288,16 +303,30 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--out-dir",
-        default="sim/vectors",
+        default=None,
         type=Path,
         help="directory for generated .hex vector files",
+    )
+    parser.add_argument(
+        "--vector-set",
+        choices=("t1", "t2", "all"),
+        default="t1",
+        help="vector set to generate: t1=boundary regression, t2=input_len 0..rate+1 sweep",
     )
     args = parser.parse_args()
 
     self_check()
-    cases = default_cases()
-    write_vectors(args.out_dir, cases)
-    print(f"Wrote {len(cases)} regression vectors to {args.out_dir}")
+    case_sets = {
+        "t1": default_cases,
+        "t2": exhaustive_input_len_cases,
+    }
+
+    selected_sets = ("t1", "t2") if args.vector_set == "all" else (args.vector_set,)
+    for vector_set in selected_sets:
+        out_dir = args.out_dir if args.out_dir is not None else Path("sim/vectors") / vector_set
+        cases = case_sets[vector_set]()
+        write_vectors(out_dir, cases)
+        print(f"Wrote {len(cases)} {vector_set} regression vectors to {out_dir}")
 
 
 if __name__ == "__main__":

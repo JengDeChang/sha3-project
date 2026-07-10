@@ -11,7 +11,7 @@ module tb;
     localparam int DATA_WIDTH       = 32;
     localparam int DATA_BYTES       = DATA_WIDTH / 8;
     localparam int CLK_PERIOD       = 10;
-    localparam int MAX_TESTS        = 128;
+    localparam int MAX_TESTS        = 1200;
     localparam int MAX_INPUT_BYTES  = 512;
     localparam int MAX_OUTPUT_BYTES = 512;
     localparam int TIMEOUT_CYCLES   = 5000;
@@ -44,6 +44,8 @@ module tb;
     int test_id;
     int pass_count;
     int selected_case;
+    string vector_set;
+    string vector_dir;
 
     sha3 #(
         .DATA_WIDTH(DATA_WIDTH)
@@ -349,10 +351,17 @@ module tb;
     initial begin
         pass_count = 0;
         selected_case = -1;
+        vector_set = "t1";
+        vector_dir = "sha3/sim/vectors/t1";
 
-        $display("Loading regression vectors");
+        if ($value$plusargs("vector_set=%s", vector_set))
+            vector_dir = {"sha3/sim/vectors/", vector_set};
+        if ($value$plusargs("vector_dir=%s", vector_dir)) begin
+        end
+
+        $display("Loading regression vectors from %s", vector_dir);
         $fflush;
-        $readmemh("sha3/sim/vectors/regression_count.hex", vector_count_mem);
+        $readmemh({vector_dir, "/regression_count.hex"}, vector_count_mem);
 
         vector_count = vector_count_mem[0];
         $display("Loaded %0d regression vectors", vector_count);
@@ -362,9 +371,9 @@ module tb;
             $finish;
         end
 
-        $readmemh("sha3/sim/vectors/regression_meta.hex", meta_mem, 0, vector_count - 1);
-        $readmemh("sha3/sim/vectors/regression_input.hex", input_mem, 0, vector_count*MAX_INPUT_BYTES - 1);
-        $readmemh("sha3/sim/vectors/regression_expected.hex", expected_mem, 0, vector_count*MAX_OUTPUT_BYTES - 1);
+        $readmemh({vector_dir, "/regression_meta.hex"}, meta_mem, 0, vector_count - 1);
+        $readmemh({vector_dir, "/regression_input.hex"}, input_mem, 0, vector_count*MAX_INPUT_BYTES - 1);
+        $readmemh({vector_dir, "/regression_expected.hex"}, expected_mem, 0, vector_count*MAX_OUTPUT_BYTES - 1);
 
         if ($value$plusargs("case=%d", selected_case)) begin
             if (selected_case < 0 || selected_case >= vector_count) begin
