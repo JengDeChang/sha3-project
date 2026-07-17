@@ -142,36 +142,6 @@ module tb;
         repeat (2) @(posedge clk);
     endtask
 
-    task automatic idle_input_cycle();
-        @(posedge clk);
-        s_axis_tvalid = 1'b0;
-        s_axis_tkeep  = '0;
-        s_axis_tdata  = '0;
-    endtask
-
-    task automatic send_word(
-        input logic [DATA_WIDTH-1:0] word_data,
-        input logic [DATA_BYTES-1:0] word_keep
-    );
-        logic ready_before_edge;
-        @(negedge clk);
-        s_axis_tdata  = word_data;
-        s_axis_tkeep  = word_keep;
-        s_axis_tvalid = 1'b1;
-
-        ready_before_edge = s_axis_tready;
-        while (!ready_before_edge) begin
-            @(posedge clk);
-            @(negedge clk);
-            ready_before_edge = s_axis_tready;
-        end
-        @(posedge clk);
-        @(negedge clk);
-        s_axis_tvalid = 1'b0;
-        s_axis_tkeep  = '0;
-        s_axis_tdata  = '0;
-    endtask
-
     task automatic start_empty_message();
         @(negedge clk);
         s_axis_tdata  = '0;
@@ -194,6 +164,7 @@ module tb;
         int bytes_this_word;
         logic [DATA_WIDTH-1:0] word_data;
         logic [DATA_BYTES-1:0] word_keep;
+        logic ready_before_edge;
 
         if (input_len == 0) begin
             start_empty_message();
@@ -201,8 +172,15 @@ module tb;
             byte_idx = 0;
             word_idx = 0;
             while (byte_idx < input_len) begin
-                if ((flags & FLAG_INPUT_BUBBLES) != 0 && (word_idx % 3 == 1))
-                    idle_input_cycle();
+                // Keep valid asserted between accepted words by default. Only
+                // flagged cases insert one complete idle transfer cycle.
+                if ((flags & FLAG_INPUT_BUBBLES) != 0 && (word_idx % 3 == 1)) begin
+                    @(negedge clk);
+                    s_axis_tvalid = 1'b0;
+                    s_axis_tkeep  = '0;
+                    s_axis_tdata  = '0;
+                    @(posedge clk);
+                end
 
                 bytes_this_word = input_len - byte_idx;
                 if (bytes_this_word > DATA_BYTES)
@@ -217,10 +195,29 @@ module tb;
                     end
                 end
 
-                send_word(word_data, word_keep);
+                // Present the word before the active edge. If ready is low,
+                // hold valid, data, and keep stable until it is accepted.
+                @(negedge clk);
+                s_axis_tdata  = word_data;
+                s_axis_tkeep  = word_keep;
+                s_axis_tvalid = 1'b1;
+
+                ready_before_edge = s_axis_tready;
+                while (!ready_before_edge) begin
+                    @(posedge clk);
+                    @(negedge clk);
+                    ready_before_edge = s_axis_tready;
+                end
+                @(posedge clk);
+
                 byte_idx += bytes_this_word;
                 word_idx++;
             end
+
+            @(negedge clk);
+            s_axis_tvalid = 1'b0;
+            s_axis_tkeep  = '0;
+            s_axis_tdata  = '0;
         end
     endtask
 
