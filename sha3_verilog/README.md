@@ -10,12 +10,54 @@ The top-level module and port names are preserved:
 
 The original package constants, mode names, FSM state names, round constants, timing control, counters, and FSM transitions are kept in Verilog-compatible form.
 
+## Verilator Regression (`tb.sv`)
+
+Run the vector-driven SystemVerilog testbench from the `sha3_verilog`
+directory. The
+testbench includes `sha3_defines.vh` directly and does not require
+`sha3/sha3_pkg.sv`.
+
+```sh
+cd /home/edmund/Projects/sha3-project/sha3_verilog
+source ~/EDA/oss-cad-suite/environment
+
+verilator --binary --timing --trace -Wno-fatal \
+  -I. \
+  --Mdir obj_dir \
+  keccak_f1600.v \
+  sha3.v \
+  sim/tb.sv \
+  --top-module tb
+```
+
+Run the T1 boundary/protocol regression (88 vectors):
+
+```sh
+./obj_dir/Vtb +vector_set=t1
+```
+
+Run the T2 exhaustive input-length sweep (1,080 vectors):
+
+```sh
+./obj_dir/Vtb +vector_set=t2
+```
+
+Run one vector or enable waveform dumping for debugging:
+
+```sh
+./obj_dir/Vtb +vector_set=t2 +case=13
+./obj_dir/Vtb +vector_set=t2 +case=13 +dump
+```
+
+The selected vectors are read from `sim/vectors/t1/` or `sim/vectors/t2/`.
+The `+dump` option writes `sim/out/tb.vcd`.
+
 ## Icarus Verilog
 
 Run simulations from this directory:
 
 ```sh
-cd sha3_verilog
+cd /home/edmund/Projects/sha3-project/sha3_verilog
 source ~/EDA/oss-cad-suite/environment
 mkdir -p sim/out
 ```
@@ -39,9 +81,44 @@ included header.
 
 The smoke test writes `sim/out/smoke_tb.vcd`.
 
+### Vector Regression (`tb.sv`)
+
+The same `sim/tb.sv` used by Verilator can also be compiled in Icarus
+SystemVerilog 2012 mode. Run these commands from the `sha3_verilog` directory:
+
+```sh
+cd /home/edmund/Projects/sha3-project/sha3_verilog
+source ~/EDA/oss-cad-suite/environment
+mkdir -p sim/out
+
+iverilog -g2012 -I . \
+  -o sim/out/tb.vvp \
+  keccak_f1600.v \
+  sha3.v \
+  sim/tb.sv
+```
+
+Run the complete T1 or T2 vector set:
+
+```sh
+vvp sim/out/tb.vvp +vector_set=t1
+vvp sim/out/tb.vvp +vector_set=t2
+```
+
+Run a single vector or enable waveform dumping:
+
+```sh
+vvp sim/out/tb.vvp +vector_set=t2 +case=13
+vvp sim/out/tb.vvp +vector_set=t2 +case=13 +dump
+```
+
+T1 contains 88 vectors and T2 contains 1,080 vectors. The `+dump` option
+writes `sim/out/tb.vcd`.
+
 ### Regression Test
 
-The regression test reads external test vectors from `sim/vectors/` and covers
+The legacy `sim/regression_tb.v` test reads external test vectors from
+`sim/vectors/` and covers
 all modes, partial input words, rate-boundary lengths, multi-block input,
 multi-block SHAKE/TurboSHAKE output, input bubbles, output backpressure, and
 partial output `tkeep` checks.

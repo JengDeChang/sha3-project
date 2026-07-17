@@ -66,6 +66,11 @@ __pycache__/
 *.py[cod]
 
 
+# EQY
+sha3_equiv/
+sha3_equiv_splitnets_off/
+
+
 # Editor, OS, and local environment
 *~
 *.swp

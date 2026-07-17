@@ -18,21 +18,22 @@ accordingly if the width is not sufficient.
 
 ## Verilator Simulation
 
-Run the SystemVerilog regression testbench from the project root:
+Run the SystemVerilog regression testbench from the `sha3` directory:
 
 ```sh
-cd /home/edmund/Projects/sha3-project
+cd /home/edmund/Projects/sha3-project/sha3
 source ~/EDA/oss-cad-suite/environment
 ```
 
 Build the testbench:
 
 ```sh
-verilator --binary --timing -Wno-fatal -Isha3 \
-  sha3/sha3_pkg.sv \
-  sha3/keccak_f1600.sv \
-  sha3/sha3.sv \
-  sha3/sim/tb.sv \
+verilator --binary --timing -Wno-fatal -I. \
+  --Mdir obj_dir \
+  sha3_pkg.sv \
+  keccak_f1600.sv \
+  sha3.sv \
+  sim/tb.sv \
   --top-module tb
 ```
 
@@ -64,8 +65,8 @@ Enable waveform dumping only when debugging:
 
 The testbench reads vectors from:
 
-- `sha3/sim/vectors/t1/`
-- `sha3/sim/vectors/t2/`
+- `sim/vectors/t1/`
+- `sim/vectors/t2/`
 
 Each vector directory contains:
 

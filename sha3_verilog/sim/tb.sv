@@ -4,10 +4,9 @@
 // Vector-driven SHA-3/SHAKE/TurboSHAKE regression testbench.
 
 `timescale 1ns/1ps
+`include "sha3_defines.vh"
 
 module tb;
-    import sha3_pkg::*;
-
     localparam int DATA_WIDTH       = 32;
     localparam int DATA_BYTES       = DATA_WIDTH / 8;
     localparam int CLK_PERIOD       = 10;
@@ -15,6 +14,23 @@ module tb;
     localparam int MAX_INPUT_BYTES  = 512;
     localparam int MAX_OUTPUT_BYTES = 512;
     localparam int TIMEOUT_CYCLES   = 5000;
+
+    // Testbench aliases sourced from the Verilog DUT's definition header.
+    localparam logic [2:0] M_SHA3_224      = `M_SHA3_224;
+    localparam logic [2:0] M_SHA3_256      = `M_SHA3_256;
+    localparam logic [2:0] M_SHA3_384      = `M_SHA3_384;
+    localparam logic [2:0] M_SHA3_512      = `M_SHA3_512;
+    localparam logic [2:0] M_SHAKE128      = `M_SHAKE128;
+    localparam logic [2:0] M_SHAKE256      = `M_SHAKE256;
+    localparam logic [2:0] M_TURBOSHAKE128 = `M_TURBOSHAKE128;
+    localparam logic [2:0] M_TURBOSHAKE256 = `M_TURBOSHAKE256;
+
+    localparam int SHA3_224_RATE = `SHA3_224_RATE;
+    localparam int SHA3_256_RATE = `SHA3_256_RATE;
+    localparam int SHA3_384_RATE = `SHA3_384_RATE;
+    localparam int SHA3_512_RATE = `SHA3_512_RATE;
+    localparam int SHAKE128_RATE = `SHAKE128_RATE;
+    localparam int SHAKE256_RATE = `SHAKE256_RATE;
 
     localparam logic [7:0] FLAG_INPUT_BUBBLES       = 8'h01;
     localparam logic [7:0] FLAG_OUTPUT_BACKPRESSURE = 8'h02;
@@ -386,7 +402,7 @@ module tb;
                 run_case(test_id);
         end
 
-        $display("SHA3 SystemVerilog regression passed: %0d cases", pass_count);
+        $display("SHA3 Verilog regression passed: %0d cases", pass_count);
         $finish;
     end
 endmodule

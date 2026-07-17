@@ -1,0 +1,32 @@
+[options]
+splitnets off
+
+[gold]
+plugin -i slang
+read_slang sha3/*.sv
+prep -top sha3
+memory_map
+async2sync
+opt_clean
+
+[gate]
+read_verilog sha3_verilog/*.v
+prep -top sha3
+memory_map
+async2sync
+opt_clean
+
+[strategy quick]
+use sat
+depth 10
+
+[strategy prove]
+use sby
+engine abc pdr
+timeout 300
+
+[strategy induction]
+use sby
+engine smtbmc bitwuzla
+depth 30
+timeout 600

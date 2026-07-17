@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate regression vectors and golden outputs for sha3_verilog.
+"""Generate regression vectors and golden outputs for sha3.
 
 Golden-data provenance:
   - SHA3-224/256/384/512 and SHAKE128/256 are generated with Python hashlib,
@@ -15,8 +15,9 @@ References:
   - RFC 9861:
     https://www.rfc-editor.org/rfc/rfc9861.html
 
-Run from sha3_verilog:
-    python3 sim/scripts/generate_regression_vectors.py
+Run from sha3:
+    python3 sim/scripts/generate_regression_vectors.py --vector-set t1
+    python3 sim/scripts/generate_regression_vectors.py --vector-set t2
 """
 
 import argparse
@@ -24,8 +25,8 @@ import hashlib
 from pathlib import Path
 
 MASK64 = (1 << 64) - 1
-MAX_INPUT_BYTES = 192
-MAX_OUTPUT_BYTES = 224
+MAX_INPUT_BYTES = 512
+MAX_OUTPUT_BYTES = 512
 
 MODE_ID = {
     "SHA3_224": 0,
@@ -40,6 +41,17 @@ MODE_ID = {
 
 FLAG_INPUT_BUBBLES = 0x01
 FLAG_OUTPUT_BACKPRESSURE = 0x02
+
+MODE_INFO = {
+    "SHA3_224": {"rate": 144, "out_len": 28, "xof": False},
+    "SHA3_256": {"rate": 136, "out_len": 32, "xof": False},
+    "SHA3_384": {"rate": 104, "out_len": 48, "xof": False},
+    "SHA3_512": {"rate": 72, "out_len": 64, "xof": False},
+    "SHAKE128": {"rate": 168, "out_len": 32, "xof": True},
+    "SHAKE256": {"rate": 136, "out_len": 64, "xof": True},
+    "TURBOSHAKE128": {"rate": 168, "out_len": 64, "xof": True},
+    "TURBOSHAKE256": {"rate": 136, "out_len": 64, "xof": True},
+}
 
 ROT = [
     [0, 36, 3, 41, 18],
@@ -171,42 +183,61 @@ def pattern(length, seed):
     return bytes(((seed + 17 * i + 31 * (i % 7)) & 0xFF) for i in range(length))
 
 
+def flags_for_case(index):
+    flags = 0
+    if index % 3 == 1:
+        flags |= FLAG_INPUT_BUBBLES
+    if index % 4 == 2:
+        flags |= FLAG_OUTPUT_BACKPRESSURE
+    return flags
+
+
+def message_for_case(mode, length, index):
+    if length == 0:
+        return b""
+    if length == 1:
+        return b"a"
+    if length == 3:
+        return b"abc"
+    seed = (0x21 + 0x17 * MODE_ID[mode] + index) & 0xFF
+    return pattern(length, seed)
+
+
 def default_cases():
-    return [
-        ("SHA3_256", b"", 32, 0),
-        ("SHA3_256", b"abc", 32, 0),
-        ("SHA3_224", b"abc", 28, FLAG_OUTPUT_BACKPRESSURE),
-        ("SHA3_384", b"abc", 48, 0),
-        ("SHA3_512", b"abc", 64, FLAG_OUTPUT_BACKPRESSURE),
-        ("SHA3_256", b"a", 32, FLAG_INPUT_BUBBLES),
-        ("SHA3_256", b"abcd", 32, 0),
-        ("SHA3_384", pattern(135, 0x20), 32, FLAG_INPUT_BUBBLES),
-        ("SHA3_256", pattern(136, 0x33), 32, 0),
-        (
-            "SHA3_256",
-            pattern(137, 0x40),
-            32,
-            FLAG_INPUT_BUBBLES | FLAG_OUTPUT_BACKPRESSURE,
-        ),
-        ("SHA3_512", pattern(73, 0x59), 64, FLAG_INPUT_BUBBLES),
-        ("SHAKE128", b"", 32, 0),
-        ("SHAKE128", b"abc", 64, FLAG_OUTPUT_BACKPRESSURE),
-        (
-            "SHAKE128",
-            pattern(170, 0x62),
-            200,
-            FLAG_INPUT_BUBBLES | FLAG_OUTPUT_BACKPRESSURE,
-        ),
-        ("SHAKE256", b"abc", 64, 0),
-        ("TURBOSHAKE128", b"", 64, FLAG_OUTPUT_BACKPRESSURE),
-        ("TURBOSHAKE128", pattern(170, 0x31), 200, FLAG_INPUT_BUBBLES),
-        (
-            "TURBOSHAKE256",
-            b"abc",
-            64,
-            FLAG_INPUT_BUBBLES | FLAG_OUTPUT_BACKPRESSURE,
-        ),
-    ]
+    cases = []
+
+    for mode, info in MODE_INFO.items():
+        rate = info["rate"]
+        out_len = info["out_len"]
+        input_lengths = [0, 1, 3, rate - 1, rate, rate + 1, 2 * rate + 3, 3 * rate + 5]
+
+        for input_len in input_lengths:
+            idx = len(cases)
+            msg = message_for_case(mode, input_len, idx)
+            cases.append((mode, msg, out_len, flags_for_case(idx)))
+
+        if info["xof"]:
+            output_lengths = [1, rate - 1, rate, rate + 1, 2 * rate + 3, 3 * rate + 5]
+            msg = message_for_case(mode, rate + 1, len(cases))
+            for output_len in output_lengths:
+                idx = len(cases)
+                cases.append((mode, msg, output_len, flags_for_case(idx)))
+
+    return cases
+
+
+def exhaustive_input_len_cases():
+    cases = []
+
+    for mode, info in MODE_INFO.items():
+        rate = info["rate"]
+        out_len = info["out_len"]
+        for input_len in range(rate + 2):
+            idx = len(cases)
+            msg = message_for_case(mode, input_len, idx)
+            cases.append((mode, msg, out_len, flags_for_case(idx)))
+
+    return cases
 
 
 def self_check():
@@ -272,16 +303,30 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--out-dir",
-        default="sim/vectors",
+        default=None,
         type=Path,
         help="directory for generated .hex vector files",
+    )
+    parser.add_argument(
+        "--vector-set",
+        choices=("t1", "t2", "all"),
+        default="t1",
+        help="vector set to generate: t1=boundary regression, t2=input_len 0..rate+1 sweep",
     )
     args = parser.parse_args()
 
     self_check()
-    cases = default_cases()
-    write_vectors(args.out_dir, cases)
-    print(f"Wrote {len(cases)} regression vectors to {args.out_dir}")
+    case_sets = {
+        "t1": default_cases,
+        "t2": exhaustive_input_len_cases,
+    }
+
+    selected_sets = ("t1", "t2") if args.vector_set == "all" else (args.vector_set,)
+    for vector_set in selected_sets:
+        out_dir = args.out_dir if args.out_dir is not None else Path("sim/vectors") / vector_set
+        cases = case_sets[vector_set]()
+        write_vectors(out_dir, cases)
+        print(f"Wrote {len(cases)} {vector_set} regression vectors to {out_dir}")
 
 
 if __name__ == "__main__":
