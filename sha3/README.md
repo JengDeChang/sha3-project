@@ -75,6 +75,22 @@ Each vector directory contains:
 - `regression_input.hex`: input bytes, fixed-size slots per vector
 - `regression_expected.hex`: expected output bytes, fixed-size slots per vector
 
+Traffic flags are stored in the upper byte of each metadata entry:
+
+- `0x00`: continuous input with no intentional bubbles; while the DUT remains
+  ready, input words are transferred on consecutive clock cycles. Output ready
+  remains asserted.
+- `0x01` (`FLAG_INPUT_BUBBLES`): inserts one idle input cycle before words whose
+  zero-based index is `1 mod 3`. Other accepted words remain continuous.
+- `0x02` (`FLAG_OUTPUT_BACKPRESSURE`): keeps input continuous, but deasserts
+  output ready for two cycles in every seven-cycle period.
+- `0x03`: enables both input bubbles and output backpressure.
+
+During any input stall (`s_axis_tvalid=1` and `s_axis_tready=0`), the testbench
+holds input data and `tkeep` stable. During output backpressure, the testbench
+checks that the DUT holds output data and `tkeep` stable until the transfer is
+accepted.
+
 ## Regression Vector Generation
 
 Generate vectors from the `sha3` directory:

@@ -52,6 +52,21 @@ Run one vector or enable waveform dumping for debugging:
 The selected vectors are read from `sim/vectors/t1/` or `sim/vectors/t2/`.
 The `+dump` option writes `sim/out/tb.vcd`.
 
+The vector metadata controls the input/output traffic pattern:
+
+- `flags=0x00`: continuous input with no intentional bubbles; while the DUT
+  remains ready, input words are transferred on consecutive clock cycles.
+  Output ready remains asserted.
+- `flags=0x01` (`FLAG_INPUT_BUBBLES`): inserts one idle input cycle before words
+  whose zero-based index is `1 mod 3`. Other accepted words remain continuous.
+- `flags=0x02` (`FLAG_OUTPUT_BACKPRESSURE`): keeps input continuous, but
+  deasserts output ready for two cycles in every seven-cycle period.
+- `flags=0x03`: enables both input bubbles and output backpressure.
+
+The driver holds input data and `tkeep` stable whenever input ready is low. The
+receiver checks that output data and `tkeep` remain stable while output ready is
+low.
+
 ## Icarus Verilog
 
 Run simulations from this directory:
@@ -118,8 +133,8 @@ writes `sim/out/tb.vcd`.
 ### Regression Test
 
 The legacy `sim/regression_tb.v` test reads external test vectors from
-`sim/vectors/` and covers
-all modes, partial input words, rate-boundary lengths, multi-block input,
+`sim/vectors/` and covers all modes, partial input words, rate-boundary
+lengths, multi-block input,
 multi-block SHAKE/TurboSHAKE output, input bubbles, output backpressure, and
 partial output `tkeep` checks.
 
